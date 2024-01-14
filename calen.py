@@ -1,15 +1,14 @@
 import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
-import matplotlib.colors as mcolors
 import pandas as pd
-from calendar import monthrange, day_name, month_name
+from calendar import monthrange, month_name
 import numpy as np
 from datetime import datetime
+import matplotlib.colors as mcolors
 
 # 读取数据
 df = pd.read_csv('./data/wechat_chat.csv')
-
 
 # 转换时间戳为日期格式
 df['date'] = pd.to_datetime(df['StrTime']).dt.date
@@ -26,38 +25,28 @@ colors = ["#ffffff", "#ffcccc", "#ff9999", "#ff6666", "#ff3333", "#ff0000"]
 cmap = mcolors.LinearSegmentedColormap.from_list("count_cmap", colors)
 norm = mcolors.Normalize(vmin=0, vmax=date_counts.max())
 
-# 循环处理每个月
-for year in years:
-    # 准备绘制
-    fig, axes = plt.subplots(3, 4, figsize=(15, 6), dpi=400)  # 为每个月分配一个子图
-    for i, ax in enumerate(axes.flatten()):
+# 创建一个新的图形，子图数量为年份数量 x 12（每年12个月）
+fig, axes = plt.subplots(len(years) * 3, 4, figsize=(20, len(years) * 5), dpi=400)  # 调整子图布局
+
+# 循环处理每个年份和每个月
+for y_index, year in enumerate(years):
+    for i in range(12):
         month = i + 1
-        # 获取该月的天数和第一天是周几
+        ax = axes[y_index * 3 + i // 4, i % 4]  # 计算当前子图的位置
         first_weekday, num_days = monthrange(year, month)
-        # 创建该月的日期列表
         dates = ["" for _ in range(first_weekday)] + list(range(1, num_days + 1))
-        # 填充剩余的空间，以使所有子图具有相同的格式
         while len(dates) < 42:
             dates.append("")
-        # 创建热力图数据
-        # print(year, month)
-        # print(date_counts.get(f'{year}-{month}-01', 0)
         data = np.array([date_counts.get(pd.Timestamp(year, month, day), 0) if isinstance(day, int) else 0 for day in dates])
-        # print(data.reshape(6, 7))
-
-        # 绘制热力图
         ax.imshow(data.reshape(6, 7), cmap=cmap, norm=norm)
-        # 设置子图的标题为月份
-        ax.set_title(month_name[month])
-        # 隐藏坐标轴
+        ax.set_title(f'{month_name[month]} {year}')
         ax.set_xticks([])
         ax.set_yticks([])
-        # 在每个单元格中标记日期
         for ind, date in enumerate(dates):
-            ax.text(ind % 7, ind // 7, date, ha='center', va='center', fontsize=8)
+            ax.text(ind % 7, ind // 7, str(date) if date else "", ha='center', va='center', fontsize=6)
 
-    # 调整布局
-    plt.tight_layout()
-    # 保存图像
-    plt.savefig(f'./image/calendar{year}.png')
-    plt.close(fig)
+# 调整布局
+plt.tight_layout()
+
+# 保存图像
+plt.savefig(f'./image/calendar.png')
