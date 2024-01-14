@@ -23,7 +23,7 @@ plt.figure(figsize=(15, 10))  # 增加图形大小
 
 # 绘制每月聊天次数的直方图
 plt.subplot(2, 1, 1)
-monthly_counts.plot(kind='bar', color='gray', width=0.8)
+monthly_counts.plot(kind='bar', color='skyblue', width=0.8)
 plt.title('Monthly Chat Count Statistics')
 plt.xlabel('Month')
 plt.ylabel('Number of Messages')
@@ -31,7 +31,7 @@ plt.xticks(rotation=45)
 
 # 绘制每日聊天次数的直方图
 plt.subplot(2, 1, 2)
-daily_counts.plot(kind='bar', color='gray', width=0.8)
+daily_counts.plot(kind='bar', color='skyblue', width=0.8)
 plt.title('Daily Chat Count Statistics')
 plt.xlabel('Day')
 plt.ylabel('Number of Messages')
